@@ -1,38 +1,25 @@
-.PHONY: sync validate doctor lint clean
+.PHONY: bootstrap sync validate doctor test lint check
 
-PYTHON ?= python3
+PY ?= uv run python
+
+bootstrap:
+	bash src/scripts/bootstrap.sh
 
 sync:
-	@echo "→ syncing shared → bindings"
-	$(PYTHON) scripts/sync.py all
+	$(PY) src/cli/sync.py
 
 validate:
-	@echo "→ validating source files"
-	$(PYTHON) scripts/validate.py all
+	$(PY) src/cli/validate.py
 
 doctor:
-	@echo "→ checking binding drift"
-	$(PYTHON) scripts/doctor.py all
+	$(PY) src/cli/doctor.py
 
-lint: validate doctor
-	@echo "→ all checks passed"
+test:
+	uv run pytest -q
 
-clean:
-	@echo "→ removing generated bindings"
-	rm -f .claude/commands/*.md
-	rm -f .kiro/steering/skill-*.md
-	rm -f .kiro/hooks/on-*.yaml
-	@echo "(run 'make sync' to regenerate)"
-
-sync-dry:
-	@echo "→ dry-run sync (no writes)"
-	$(PYTHON) scripts/sync.py all --dry-run --verbose
-
-doctor-fix:
-	@echo "→ re-syncing stale bindings"
-	$(PYTHON) scripts/doctor.py all --fix
+lint: validate doctor test
+	@echo "all checks passed"
 
 check:
-	@echo "→ checking for formatting"
-	uv run ruff check --fix .
+	uv run ruff check src tests
 	uv run yamllint .

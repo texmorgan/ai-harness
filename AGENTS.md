@@ -1,39 +1,22 @@
 # AGENTS.md
 
-This repo is the AI engineering harness.
-It defines shared steering, powers, and skills
-that are distributed to Claude Code, Kiro,
-GitHub Copilot / Codex, and VS Code.
+This repository is a reference library. Source lives in `src/`. Consumers clone it and use the artifacts they enable.
 
 ## Before you act
-1. Read `steering/project.md` for org context.
-2. Read `steering/conventions.md` for rules.
-3. Read `powers/_index.yaml` to see available
-   roles and what each one is allowed to do.
-4. Read `skills/_registry.yaml` for atomic
-   capabilities and their triggers.
 
-## Do NOT
-- Edit `.claude/`, `.kiro/`, `.github/copilot/`,
-  or `.vscode/` by hand. Those are generated
-  by `make sync`.
-- Add a new skill or power without registering
-  it in the corresponding `_index.yaml` /
-  `_registry.yaml`.
+1. Read `docs/explanation/layout.md`.
+2. Read `src/steering/naming.md` and `src/context/glossary.md`.
+3. For an agent, read its file in `src/agents/` and check its declared parameters.
+
+## Do not
+
+- Edit `.claude/agents/`, `.kiro/`, `.github/copilot/`, or `.vscode/` by hand. Run `make sync`.
+- Add a placeholder to an artifact unless it is declared in `parameters`.
+- Add a referenced source without a `source` field and a row in `SOURCES.md`.
+- Reproduce long passages from books. Summarize them and cite them.
+- Add a top-level file or folder outside the layout in `README.md`. Propose it in a PR instead.
+- Commit personal, employer, or client data. Use the gitignored `private/` directory.
 
 ## Commands
-- `make sync`      regenerate all tool bindings
-- `make doctor`    check bindings match source
-- `make validate`  lint steering / powers / skills
-- `make lint`      all of the above
 
-## Hierarchy
-steering/   →  context: where we're going,
-               what the rules are
-powers/     →  roles: what a given agent
-               is empowered to do
-skills/     →  atomic operations: the
-               smallest triggerable unit
-
-A power composes skills.
-Steering constrains both.
+`make sync`, `make validate`, `make doctor`, `make test`, `make lint`.

@@ -1,0 +1,5 @@
+# Kiro-referenced powers. Each entry points at an agent or workflow in src/.
+# Intentionally empty. Earlier role entries referenced files that do not exist.
+# They remain in git history at commit 0c87935.
+version: 1
+powers: []

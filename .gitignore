@@ -74,7 +74,6 @@ tmbootpicker.efi
 # https://realpython.com/python-virtual-environments-a-primer/#the-virtualenv-project
 .venv/
 venv/
-.python-version
 
 # pyenv: Simple Python Version Management
 pyvenv.cfg
@@ -84,12 +83,6 @@ pip-selfcheck.json
 
 # Custom python interpreter
 .Python
-[Bb]in
-[Ii]nclude
-[Ll]ib
-[Ll]ib64
-[Ll]ocal
-[Ss]cripts
 
 # Linux 
 *~
@@ -553,3 +546,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Private material never committed
+private/
