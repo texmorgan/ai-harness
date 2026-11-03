@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "registry": {
+      "command": "node",
+      "args": ["mcp/servers/registry-server/index.mjs"],
+      "env": {}
+    },
+    "jira": {
+      "command": "node",
+      "args": ["mcp/servers/jira-link/index.mjs"],
+      "env": {
+        "JIRA_BASE_URL": "",
+        "JIRA_TOKEN": ""
+      }
+    }
+  }
+}

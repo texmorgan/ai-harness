@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "read steering/**",
+      "read powers/**",
+      "read skills/**",
+      "read conventions/**",
+      "read docs/**",
+      "read .mcp.json",
+      "write .claude/commands/",
+      "write .claude/agents/",
+      "run make sync",
+      "run make doctor",
+      "run make validate"
+    ],
+    "deny": [
+      "write .kiro/**",
+      "write .github/**",
+      "write .vscode/**",
+      "write mcp/**",
+      "deploy to production"
+    ]
+  },
+  "hooks": {
+    "onPrOpen": "skills/code-review/SKILL.md",
+    "onIncident": "skills/incident-response/SKILL.md",
+    "onSecurityEvent": "skills/security-scan/SKILL.md"
+  }
+}
