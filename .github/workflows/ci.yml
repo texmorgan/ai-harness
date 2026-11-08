@@ -1,6 +1,7 @@
+---
 name: ci
 
-on:
+"on":
   push:
     branches: [main]
   pull_request:
@@ -16,7 +17,7 @@ jobs:
       - id: checkout
         name: Checkout code
         uses: actions/checkout@v7.0.1
-      
+
       - id: uv-setup
         name: Set up uv
         uses: astral-sh/setup-uv@v10.3.3
@@ -26,7 +27,7 @@ jobs:
         run: uv sync
 
       - id: make-lint
-        name: Make Lint        
+        name: Make Lint
         run: make lint
 
       - id: super-linter
@@ -59,7 +60,7 @@ jobs:
     steps:
       - id: checkout
         name: Checkout code
-        uses: actions/checkout@v7.0.1   
+        uses: actions/checkout@v7.0.1
 
       - id: run-security-checks
         name: Run security checks
