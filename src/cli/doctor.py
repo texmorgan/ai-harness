@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Detect generated bindings that drifted from src/. Exit 1 on drift unless --fix."""
 
 from __future__ import annotations
@@ -10,7 +9,7 @@ import click
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from harness import REPO_ROOT, drift, write_outputs  # noqa: E402
+from harness import REPO_ROOT, drift, write_outputs
 
 
 @click.command()

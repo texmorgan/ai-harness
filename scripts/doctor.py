@@ -25,7 +25,6 @@ from _common import (
     REPO_ROOT,
     load_skills,
     read_json,
-    skill_content,
     write_generated,
     write_json,
 )
@@ -39,8 +38,8 @@ from sync import (
     render_vscode_setting,
 )
 
-
 # ── drift check per tool ───────────────────────────────────────
+
 
 def check_claude(skills, *, fix: bool) -> list[dict]:
     drifts = []
@@ -64,16 +63,14 @@ def check_claude(skills, *, fix: bool) -> list[dict]:
                 "status": "stale" if out_path.exists() else "missing",
             }
             if fix:
-                write_generated(out_path, render_claude_command(skill),
-                               header=GENERATED_HEADER)
-                entry["status"] = "fixed"
-                click.secho(
-                    f"  [claude] fixed  {entry['path']}", fg="green"
+                write_generated(
+                    out_path, render_claude_command(skill), header=GENERATED_HEADER
                 )
+                entry["status"] = "fixed"
+                click.secho(f"  [claude] fixed  {entry['path']}", fg="green")
             else:
                 click.secho(
-                    f"  [claude] DRIFT  {entry['path']} "
-                    f"({entry['status']})", fg="red"
+                    f"  [claude] DRIFT  {entry['path']} ({entry['status']})", fg="red"
                 )
             drifts.append(entry)
     return drifts
@@ -81,6 +78,7 @@ def check_claude(skills, *, fix: bool) -> list[dict]:
 
 def check_kiro(skills, *, fix: bool) -> list[dict]:
     import yaml as _yaml
+
     drifts = []
     for skill in skills:
         target = skill.targets.get("kiro", {})
@@ -96,53 +94,50 @@ def check_kiro(skills, *, fix: bool) -> list[dict]:
                 actual = ""
             if actual != expected:
                 entry = {
-                    "tool": "kiro", "skill": skill.id,
+                    "tool": "kiro",
+                    "skill": skill.id,
                     "path": str(out_path.relative_to(REPO_ROOT)),
                     "status": "stale" if out_path.exists() else "missing",
                 }
                 if fix:
-                    write_generated(out_path, body,
-                                   header=GENERATED_HEADER)
+                    write_generated(out_path, body, header=GENERATED_HEADER)
                     entry["status"] = "fixed"
-                    click.secho(
-                        f"  [kiro] fixed   {entry['path']}", fg="green"
-                    )
+                    click.secho(f"  [kiro] fixed   {entry['path']}", fg="green")
                 else:
                     click.secho(
-                        f"  [kiro] DRIFT   {entry['path']} "
-                        f"({entry['status']})", fg="red"
+                        f"  [kiro] DRIFT   {entry['path']} ({entry['status']})",
+                        fg="red",
                     )
                 drifts.append(entry)
 
         elif ttype == "hook":
             hook = render_kiro_hook(skill)
-            expected = f"{GENERATED_HEADER_YAML}\n\n" + \
-                       _yaml.dump(hook, default_flow_style=False,
-                                  sort_keys=False)
+            expected = f"{GENERATED_HEADER_YAML}\n\n" + _yaml.dump(
+                hook, default_flow_style=False, sort_keys=False
+            )
             if out_path.exists():
                 actual = out_path.read_text()
             else:
                 actual = ""
             if actual != expected:
                 entry = {
-                    "tool": "kiro", "skill": skill.id,
+                    "tool": "kiro",
+                    "skill": skill.id,
                     "path": str(out_path.relative_to(REPO_ROOT)),
                     "status": "stale" if out_path.exists() else "missing",
                 }
                 if fix:
-                    write_generated(out_path,
-                                   _yaml.dump(hook,
-                                             default_flow_style=False,
-                                             sort_keys=False),
-                                   header=GENERATED_HEADER_YAML)
-                    entry["status"] = "fixed"
-                    click.secho(
-                        f"  [kiro] fixed   {entry['path']}", fg="green"
+                    write_generated(
+                        out_path,
+                        _yaml.dump(hook, default_flow_style=False, sort_keys=False),
+                        header=GENERATED_HEADER_YAML,
                     )
+                    entry["status"] = "fixed"
+                    click.secho(f"  [kiro] fixed   {entry['path']}", fg="green")
                 else:
                     click.secho(
-                        f"  [kiro] DRIFT   {entry['path']} "
-                        f"({entry['status']})", fg="red"
+                        f"  [kiro] DRIFT   {entry['path']} ({entry['status']})",
+                        fg="red",
                     )
                 drifts.append(entry)
     return drifts
@@ -193,12 +188,10 @@ def check_copilot(skills, *, fix: bool) -> list[dict]:
             out_path.parent.mkdir(parents=True, exist_ok=True)
             out_path.write_text(expected)
             entry["status"] = "fixed"
-            click.secho(f"  [copilot] fixed   {entry['path']}",
-                        fg="green")
+            click.secho(f"  [copilot] fixed   {entry['path']}", fg="green")
         else:
             click.secho(
-                f"  [copilot] DRIFT   {entry['path']} "
-                f"({entry['status']})", fg="red"
+                f"  [copilot] DRIFT   {entry['path']} ({entry['status']})", fg="red"
             )
         return [entry]
     return []
@@ -241,14 +234,15 @@ def check_vscode(skills, *, fix: bool) -> list[dict]:
             write_json(settings_path, expected)
             entry["status"] = "fixed"
             click.secho(
-                f"  [vscode] fixed   {entry['path']} "
-                f"({len(drift_keys)} key(s))", fg="green"
+                f"  [vscode] fixed   {entry['path']} ({len(drift_keys)} key(s))",
+                fg="green",
             )
         else:
             click.secho(
                 f"  [vscode] DRIFT   {entry['path']} "
                 f"({len(drift_keys)} key(s)): "
-                f"{', '.join(drift_keys)}", fg="red"
+                f"{', '.join(drift_keys)}",
+                fg="red",
             )
         return [entry]
     return []
@@ -256,17 +250,20 @@ def check_vscode(skills, *, fix: bool) -> list[dict]:
 
 # ── click CLI ──────────────────────────────────────────────────
 
+
 @click.group()
-@click.option("--fix", is_flag=True,
-              help="Re-write stale bindings instead of just reporting.")
-@click.option("--report", is_flag=True,
-              help="Emit a JSON report to stdout.")
-@click.option("--report-out", type=click.Path(),
-              default=None,
-              help="Write JSON report to this path.")
+@click.option(
+    "--fix", is_flag=True, help="Re-write stale bindings instead of just reporting."
+)
+@click.option("--report", is_flag=True, help="Emit a JSON report to stdout.")
+@click.option(
+    "--report-out",
+    type=click.Path(),
+    default=None,
+    help="Write JSON report to this path.",
+)
 @click.pass_context
-def cli(ctx: click.Context, fix: bool, report: bool,
-        report_out: str | None) -> None:
+def cli(ctx: click.Context, fix: bool, report: bool, report_out: str | None) -> None:
     """Detect and optionally fix binding drift."""
     ctx.ensure_object(dict)
     ctx.obj.update(fix=fix, report=report, report_out=report_out)
@@ -274,7 +271,7 @@ def cli(ctx: click.Context, fix: bool, report: bool,
 
 def _run(checks: dict, ctx_obj: dict) -> None:
     all_drifts: list[dict] = []
-    for name, fn in checks.items():
+    for fn in checks.values():
         skills = load_skills()
         drifts = fn(skills, fix=ctx_obj["fix"])
         all_drifts.extend(drifts)
@@ -297,8 +294,7 @@ def _run(checks: dict, ctx_obj: dict) -> None:
         stale = [d for d in all_drifts if d["status"] in ("stale", "missing")]
         fixed = [d for d in all_drifts if d["status"] == "fixed"]
         if fixed and not stale:
-            click.secho(f"  doctor: {len(fixed)} binding(s) fixed.",
-                        fg="green")
+            click.secho(f"  doctor: {len(fixed)} binding(s) fixed.", fg="green")
         elif stale:
             click.secho(
                 f"  doctor: FAILED — "
@@ -315,12 +311,15 @@ def _run(checks: dict, ctx_obj: dict) -> None:
 @click.pass_context
 def all(ctx: click.Context) -> None:
     """Check every tool."""
-    _run({
-        "claude":  check_claude,
-        "kiro":    check_kiro,
-        "copilot": check_copilot,
-        "vscode":  check_vscode,
-    }, ctx.obj)
+    _run(
+        {
+            "claude": check_claude,
+            "kiro": check_kiro,
+            "copilot": check_copilot,
+            "vscode": check_vscode,
+        },
+        ctx.obj,
+    )
 
 
 @cli.command()

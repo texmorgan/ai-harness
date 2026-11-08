@@ -13,6 +13,7 @@ Usage:
 from __future__ import annotations
 
 import sys
+import textwrap
 from pathlib import Path
 
 import click
@@ -33,6 +34,7 @@ from _common import (
 )
 
 # ── renderers ──────────────────────────────────────────────────
+
 
 def render_claude_command(skill: Skill) -> str:
     """Claude Code: one .md file per command under .claude/commands/."""
@@ -66,8 +68,8 @@ def render_copilot_section(skill: Skill) -> str:
     return textwrap.dedent(f"""\
     ## Skill: {skill.id}  (v{skill.version})
 
-    **Triggers:** {', '.join(skill.triggers)}
-    **Tags:** {', '.join(skill.tags)}
+    **Triggers:** {", ".join(skill.triggers)}
+    **Tags:** {", ".join(skill.tags)}
     **File:** `skills/{skill.id}/SKILL.md`
 
     {skill_content(skill).strip()}
@@ -89,8 +91,10 @@ def render_vscode_setting(skill: Skill) -> dict:
 
 # ── per-tool sync functions ────────────────────────────────────
 
-def sync_claude(skills: list[Skill], *, dry_run: bool = False,
-                verbose: bool = False) -> int:
+
+def sync_claude(
+    skills: list[Skill], *, dry_run: bool = False, verbose: bool = False
+) -> int:
     count = 0
     for skill in skills:
         target = skill.targets.get("claude", {})
@@ -107,8 +111,9 @@ def sync_claude(skills: list[Skill], *, dry_run: bool = False,
     return count
 
 
-def sync_kiro(skills: list[Skill], *, dry_run: bool = False,
-              verbose: bool = False) -> int:
+def sync_kiro(
+    skills: list[Skill], *, dry_run: bool = False, verbose: bool = False
+) -> int:
     count = 0
     for skill in skills:
         target = skill.targets.get("kiro", {})
@@ -118,8 +123,9 @@ def sync_kiro(skills: list[Skill], *, dry_run: bool = False,
         if ttype == "steering":
             rendered = render_kiro_steering(skill)
             if verbose:
-                click.echo(f"  [kiro:steering] {skill.id} → "
-                           f"{out_path.relative_to(REPO_ROOT)}")
+                click.echo(
+                    f"  [kiro:steering] {skill.id} → {out_path.relative_to(REPO_ROOT)}"
+                )
             if not dry_run:
                 write_generated(out_path, rendered, header=GENERATED_HEADER)
             count += 1
@@ -127,10 +133,12 @@ def sync_kiro(skills: list[Skill], *, dry_run: bool = False,
         elif ttype == "hook":
             hook = render_kiro_hook(skill)
             import yaml
+
             body = yaml.dump(hook, default_flow_style=False, sort_keys=False)
             if verbose:
-                click.echo(f"  [kiro:hook] {skill.id} → "
-                           f"{out_path.relative_to(REPO_ROOT)}")
+                click.echo(
+                    f"  [kiro:hook] {skill.id} → {out_path.relative_to(REPO_ROOT)}"
+                )
             if not dry_run:
                 write_generated(out_path, body, header=GENERATED_HEADER_YAML)
             count += 1
@@ -139,8 +147,9 @@ def sync_kiro(skills: list[Skill], *, dry_run: bool = False,
     return count
 
 
-def sync_copilot(skills: list[Skill], *, dry_run: bool = False,
-                 verbose: bool = False) -> int:
+def sync_copilot(
+    skills: list[Skill], *, dry_run: bool = False, verbose: bool = False
+) -> int:
     """Copilot uses a single inline file. Collect all, concatenate, write."""
     out_path = REPO_ROOT / ".github" / "copilot-instructions.md"
     sections: list[str] = []
@@ -180,8 +189,9 @@ def sync_copilot(skills: list[Skill], *, dry_run: bool = False,
     body = preface + "\n".join(sections)
 
     if verbose:
-        click.echo(f"  [copilot] {count} section(s) → "
-                   f"{out_path.relative_to(REPO_ROOT)}")
+        click.echo(
+            f"  [copilot] {count} section(s) → {out_path.relative_to(REPO_ROOT)}"
+        )
     if not dry_run:
         out_path.parent.mkdir(parents=True, exist_ok=True)
         out_path.write_text(body)
@@ -189,8 +199,9 @@ def sync_copilot(skills: list[Skill], *, dry_run: bool = False,
     return count
 
 
-def sync_vscode(skills: list[Skill], *, dry_run: bool = False,
-                verbose: bool = False) -> int:
+def sync_vscode(
+    skills: list[Skill], *, dry_run: bool = False, verbose: bool = False
+) -> int:
     """VS Code: merge skill settings into .vscode/settings.json."""
     settings_path = REPO_ROOT / ".vscode" / "settings.json"
 
@@ -213,8 +224,10 @@ def sync_vscode(skills: list[Skill], *, dry_run: bool = False,
         count += 1
 
     if verbose:
-        click.echo(f"  [vscode] {count} setting(s) merged into "
-                   f"{settings_path.relative_to(REPO_ROOT)}")
+        click.echo(
+            f"  [vscode] {count} setting(s) merged into "
+            f"{settings_path.relative_to(REPO_ROOT)}"
+        )
     if not dry_run:
         write_json(settings_path, data)
     click.echo(f"  vscode: {count} setting(s) merged.")
@@ -222,6 +235,7 @@ def sync_vscode(skills: list[Skill], *, dry_run: bool = False,
 
 
 # ── click CLI ──────────────────────────────────────────────────
+
 
 @click.group()
 @click.option("--dry-run", is_flag=True, help="Print actions, write nothing.")

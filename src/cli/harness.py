@@ -88,7 +88,9 @@ def validate_artifacts(artifacts: list[Artifact]) -> list[str]:
             errors.append(f"{where}: agents require 'description'")
         if a.id is not None:
             if a.id in by_id:
-                errors.append(f"{where}: duplicate id '{a.id}' (also {by_id[a.id].rel})")
+                errors.append(
+                    f"{where}: duplicate id '{a.id}' (also {by_id[a.id].rel})"
+                )
             by_id[a.id] = a
 
     for a in artifacts:
@@ -107,7 +109,9 @@ def validate_artifacts(artifacts: list[Artifact]) -> list[str]:
             if allowed is not None and spec["default"] not in allowed:
                 errors.append(f"{where}: default for '{name}' is not in allowed")
         for name in sorted(set(PLACEHOLDER.findall(a.body)) - set(params)):
-            errors.append(f"{where}: placeholder '{{{{{name}}}}}' is not a declared parameter")
+            errors.append(
+                f"{where}: placeholder '{{{{{name}}}}}' is not a declared parameter"
+            )
     return errors
 
 
@@ -133,7 +137,9 @@ def render(a: Artifact, overrides: dict | None = None) -> str:
         raise HarnessError(f"{a.id}: agents require 'description'")
 
     body = PLACEHOLDER.sub(lambda m: str(values[m.group(1)]), a.body)
-    front = yaml.safe_dump({"name": a.id, "description": description}, sort_keys=False, width=10**6)
+    front = yaml.safe_dump(
+        {"name": a.id, "description": description}, sort_keys=False, width=10**6
+    )
     return f"---\n{front}---\n<!-- {GENERATED_MARK} -->\n\n{body}"
 
 

@@ -10,7 +10,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src" / "cli"))
 
-from harness import (  # noqa: E402
+from harness import (
     REPO_ROOT,
     HarnessError,
     drift,
@@ -56,7 +56,9 @@ def test_repository_bindings_are_in_sync():
 
 
 def test_undeclared_placeholder_fails(tmp_path):
-    root = make_repo(tmp_path, {"src/agents/demo.md": AGENT.replace("{{driver}}", "{{other}}")})
+    root = make_repo(
+        tmp_path, {"src/agents/demo.md": AGENT.replace("{{driver}}", "{{other}}")}
+    )
     errors = validate_artifacts(iter_artifacts(root))
     assert any("{{other}}" in e for e in errors)
 
@@ -69,7 +71,9 @@ def test_referenced_origin_requires_source(tmp_path):
 
 
 def test_unknown_implements_fails(tmp_path):
-    text = AGENT.replace("description: Demo agent.", "description: Demo agent.\nimplements: [missing-id]")
+    text = AGENT.replace(
+        "description: Demo agent.", "description: Demo agent.\nimplements: [missing-id]"
+    )
     root = make_repo(tmp_path, {"src/agents/demo.md": text})
     errors = validate_artifacts(iter_artifacts(root))
     assert any("unknown id 'missing-id'" in e for e in errors)

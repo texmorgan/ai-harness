@@ -2,11 +2,6 @@
   "version": "1.0",
   "suggestions": [
     "How do I add a new skill to the harness?",
-    "Run /review on the current PR",
-    "Run /security on this change",
-    "What's the incident-response
-     procedure for a SEV-1?",
-    "Explain the three-layer model
-     (steering / powers / skills)"
+    "Explain the three-layer model (steering / powers / skills)"
   ]
 }

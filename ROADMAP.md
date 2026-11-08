@@ -1,5 +1,13 @@
 # Roadmap of Future Functionality
 
+## Configuration
+
+1. GitHub Actions will be reusable and modular
+2. pre-commit hooks will be added
+3. Make will be expanded
+4. Linting for yaml, toml, etc
+5. Security scanning
+
 ## High Level Concepts
 
 1. 12 Factor App

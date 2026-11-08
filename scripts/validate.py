@@ -19,10 +19,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from _common import (
     CONVENTIONS,
-    POWERS_DIR,
-    REPO_ROOT,
-    SKILLS_DIR,
-    STEERING_DIR,
     load_powers,
     load_skills,
     load_steering,
@@ -30,8 +26,8 @@ from _common import (
     power_exists,
 )
 
-
 # ── individual checks ──────────────────────────────────────────
+
 
 def check_skills(skills, powers, *, strict: bool) -> int:
     """Every skill must have a SKILL.md. Every required
@@ -42,31 +38,31 @@ def check_skills(skills, powers, *, strict: bool) -> int:
     for skill in skills:
         # SKILL.md must exist
         if not skill.skill_md_path or not skill.skill_md_path.exists():
-            errors.append(
-                f"  skill '{skill.id}': "
-                f"skills/{skill.id}/SKILL.md not found"
-            )
+            errors.append(f"  skill '{skill.id}': skills/{skill.id}/SKILL.md not found")
         continue
 
         # required conventions
         for conv in skill.requires.get("conventions", []):
             if not (CONVENTIONS / f"{conv}.md").exists():
-                msg = (f"  skill '{skill.id}': "
-                       f"convention '{conv}' not found in conventions/")
+                msg = (
+                    f"  skill '{skill.id}': "
+                    f"convention '{conv}' not found in conventions/"
+                )
                 errors.append(msg)
 
         # required powers
         for pw in skill.requires.get("powers", []):
             if not power_exists(pw, powers):
-                msg = (f"  skill '{skill.id}': "
-                       f"power '{pw}' not found in powers/_index.yaml")
+                msg = (
+                    f"  skill '{skill.id}': "
+                    f"power '{pw}' not found in powers/_index.yaml"
+                )
                 errors.append(msg)
 
         # required MCP servers
         for mcp in skill.requires.get("mcp", []):
             if not mcp_server_exists(mcp):
-                msg = (f"  skill '{skill.id}': "
-                       f"MCP server '{mcp}' not in .mcp.json")
+                msg = f"  skill '{skill.id}': MCP server '{mcp}' not in .mcp.json"
                 errors.append(msg)
 
         # target path safety (no ../, no absolute)
@@ -86,10 +82,7 @@ def check_skills(skills, powers, *, strict: bool) -> int:
 
         # context.md is optional
         if skill.context_md_path and not skill.context_md_path.exists():
-            warnings.append(
-                f"  skill '{skill.id}': "
-                f"context.md referenced but missing"
-            )
+            warnings.append(f"  skill '{skill.id}': context.md referenced but missing")
 
     _report("skills", errors, warnings, strict)
     return len(errors) + (len(warnings) if strict else 0)
@@ -104,10 +97,7 @@ def check_powers(powers, *, strict: bool) -> int:
 
     for power in powers:
         if not power.md_path or not power.md_path.exists():
-            errors.append(
-                f"  power '{power.id}': "
-                f"{power.file} not found in powers/"
-            )
+            errors.append(f"  power '{power.id}': {power.file} not found in powers/")
 
         for skill_id in power.composes.get("skills", []):
             if skill_id not in skill_ids:
@@ -126,10 +116,7 @@ def check_powers(powers, *, strict: bool) -> int:
                 )
 
         if not power.permissions:
-            warnings.append(
-                f"  power '{power.id}': "
-                f"no permissions declared"
-            )
+            warnings.append(f"  power '{power.id}': no permissions declared")
 
     _report("powers", errors, warnings, strict)
     return len(errors) + (len(warnings) if strict else 0)
@@ -142,15 +129,9 @@ def check_steering(steering, *, strict: bool) -> int:
 
     for doc in steering:
         if not doc.path.exists():
-            errors.append(
-                f"  steering '{doc.id}': "
-                f"{doc.file} not found in steering/"
-            )
+            errors.append(f"  steering '{doc.id}': {doc.file} not found in steering/")
         elif doc.path.stat().st_size == 0:
-            warnings.append(
-                f"  steering '{doc.id}': "
-                f"{doc.file} is empty"
-            )
+            warnings.append(f"  steering '{doc.id}': {doc.file} is empty")
 
     _report("steering", errors, warnings, strict)
     return len(errors) + (len(warnings) if strict else 0)
@@ -158,8 +139,8 @@ def check_steering(steering, *, strict: bool) -> int:
 
 # ── helpers ────────────────────────────────────────────────────
 
-def _report(name: str, errors: list[str],
-            warnings: list[str], strict: bool) -> None:
+
+def _report(name: str, errors: list[str], warnings: list[str], strict: bool) -> None:
     for w in warnings:
         click.secho(f"  WARN {w}", fg="yellow")
     for e in errors:
@@ -170,23 +151,21 @@ def _report(name: str, errors: list[str],
     elif not errors:
         click.secho(
             f"  {name}: {len(warnings)} warning(s), "
-            f"0 error(s)."
-            + ("  [strict: warnings = errors]" if strict else ""),
+            f"0 error(s)." + ("  [strict: warnings = errors]" if strict else ""),
             fg="yellow",
         )
     else:
         click.secho(
-            f"  {name}: {len(errors)} error(s), "
-            f"{len(warnings)} warning(s).",
+            f"  {name}: {len(errors)} error(s), {len(warnings)} warning(s).",
             fg="red",
         )
 
 
 # ── click CLI ──────────────────────────────────────────────────
 
+
 @click.group()
-@click.option("--strict", is_flag=True,
-              help="Treat warnings as errors.")
+@click.option("--strict", is_flag=True, help="Treat warnings as errors.")
 @click.pass_context
 def cli(ctx: click.Context, strict: bool) -> None:
     """Lint the source-of-truth files."""

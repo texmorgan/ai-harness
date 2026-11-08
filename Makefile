@@ -17,9 +17,16 @@ doctor:
 test:
 	uv run pytest -q
 
-lint: validate doctor test
+coverage:
+	uv run pytest --cov=src --cov-report=term-missing
+
+check: validate doctor lint security
 	@echo "all checks passed"
 
-check:
-	uv run ruff check src tests
+lint:
+	uv run ruff format
+	uv run ruff check --fix src tests
 	uv run yamllint .
+
+security:
+	uv run bandit -r src

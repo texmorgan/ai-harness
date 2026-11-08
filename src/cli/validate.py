@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
 """Validate src/ frontmatter, references, placeholders, and required paths."""
 
 from __future__ import annotations
 
-import subprocess
+import subprocess  # nosec B404 - argv-list calls only, no shell
 import sys
 from pathlib import Path
 
@@ -11,7 +10,7 @@ import click
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from harness import REPO_ROOT, iter_artifacts, validate_artifacts  # noqa: E402
+from harness import REPO_ROOT, iter_artifacts, validate_artifacts
 
 REQUIRED_PATHS = [
     "src",
@@ -36,7 +35,7 @@ def check_paths(root: Path = REPO_ROOT) -> list[str]:
             errors.append(f"{p}: required path is missing")
             continue
         result = subprocess.run(
-            ["git", "check-ignore", "-q", p], cwd=root, capture_output=True
+            ["git", "check-ignore", "-q", p], check=False, cwd=root, capture_output=True
         )
         if result.returncode == 0:
             errors.append(f"{p}: ignored by .gitignore, so it will not be committed")
