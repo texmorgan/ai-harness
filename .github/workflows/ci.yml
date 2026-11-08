@@ -14,54 +14,43 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - id: checkout
-        name: Checkout code
+      - name: Checkout code
         uses: actions/checkout@v7.0.1
 
-      - id: uv-setup
-        name: Set up uv
+      - name: Set up uv
         uses: astral-sh/setup-uv@v10.3.3
 
-      - id: uv-sync
-        name: Sync uv dependencies
+      - name: Sync uv dependencies
         run: uv sync
 
-      - id: make-lint
-        name: Make Lint
+      - name: Make Lint
         run: make lint
 
-      - id: super-linter
-        name: Super-Linter
+      - name: Super-Linter
         uses: super-linter/super-linter@v9.0.0
 
   tests:
     runs-on: ubuntu-latest
     needs: lint
     steps:
-      - id: checkout
-        name: Checkout code
+      - name: Checkout code
         uses: actions/checkout@v7.0.1
 
-      - id: uv-setup
-        name: Set up uv
+      - name: Set up uv
         uses: astral-sh/setup-uv@v10.3.3
 
-      - id: uv-sync
-        name: Sync uv dependencies
+      - name: Sync uv dependencies
         run: uv sync
 
-      - id: run-tests
-        name: Run tests
+      - name: Run tests
         run: make test
 
   security:
     runs-on: ubuntu-latest
     needs: lint
     steps:
-      - id: checkout
-        name: Checkout code
+      - name: Checkout code
         uses: actions/checkout@v7.0.1
 
-      - id: run-security-checks
-        name: Run security checks
+      - name: Run security checks
         run: make security
