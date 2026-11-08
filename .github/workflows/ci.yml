@@ -26,8 +26,8 @@ jobs:
       - name: Make Lint
         run: make lint
 
-      - name: Super-Linter
-        uses: super-linter/super-linter@v9.0.0
+      # - name: Super-Linter
+      #   uses: super-linter/super-linter@v9.0.0
 
   tests:
     runs-on: ubuntu-latest

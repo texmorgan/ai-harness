@@ -30,3 +30,6 @@ lint:
 
 security:
 	uv run bandit -r src
+
+upgrade:
+	uv sync --upgrade --all-extras --dev
