@@ -52,5 +52,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7.0.1
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+
+      - name: Sync uv dependencies
+        run: uv sync
+        
       - name: Run security checks
         run: make security
