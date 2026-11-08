@@ -36,7 +36,7 @@ def check_paths(root: Path = REPO_ROOT) -> list[str]:
             continue
         result = subprocess.run(
             ["git", "check-ignore", "-q", p], check=False, cwd=root, capture_output=True
-        )
+        )  # nosec B603, B607: - argv-list calls only, no shell
         if result.returncode == 0:
             errors.append(f"{p}: ignored by .gitignore, so it will not be committed")
     return errors
