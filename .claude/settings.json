@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "read src/**",
+      "read docs/**",
+      "read tests/**",
+      "read Makefile",
+      "run make sync",
+      "run make validate",
+      "run make doctor",
+      "run make test",
+      "run make lint"
+    ],
+    "deny": [
+      "write .claude/agents/**",
+      "write .kiro/**",
+      "write .github/copilot/**",
+      "write .vscode/**"
+    ]
+  }
+}
